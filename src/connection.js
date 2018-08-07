@@ -5,9 +5,10 @@ var variables = require('./variables');
 
 module.exports = {
     get: function(){
-        const client = new Client(variables.connection_string);
+        var client;
 
         async function open(){
+            client = new Client(variables.connection_string);
             await client.connect().then(function(ok){
                 console.log('Connection success');
             }).catch(function(err){
@@ -16,9 +17,9 @@ module.exports = {
             });
         }
 
-        async function queryResult(queryText, closeWhenFinish = true){
+        async function queryResult(queryText, manageConnection = true){
             var resultQuery = [];
-            if(!client.readyForQuery){
+            if(manageConnection){
                 await open();
             }
             await client.query(queryText).then(
@@ -28,7 +29,26 @@ module.exports = {
                 function(err){
                     console.log(err);
                 });
-            if(closeWhenFinish){
+            if(manageConnection){
+                await close();
+            }
+
+            return resultQuery;
+        }
+
+        async function queryResultParams(queryText, params, manageConnection = true){
+            var resultQuery = [];
+            if(manageConnection){
+                await open();
+            }
+            await client.query(queryText,...params).then(
+                function (result) {
+                    resultQuery = result.rows;
+                }).catch(
+                function (err) {
+                    console.log(err);
+                });
+            if(manageConnection){
                 await close();
             }
 
@@ -50,7 +70,8 @@ module.exports = {
         return {
             open:  open,
             close: close,
-            query: queryResult
+            query: queryResult,
+            queryParams: queryResultParams
         }
     }
 };
