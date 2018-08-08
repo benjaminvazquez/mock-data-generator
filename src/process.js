@@ -4,11 +4,13 @@ var queries = require('./vars/queries');
 var Column  = require('./domain/column');
 var Table = require('./domain/table');
 var ForeignKey = require('./domain/foreign_key');
+const util = require('util');
 
 (async function(){
     var tables = await extractTables();
     await extractAndSetForeignKeys(tables);
     await setEnumValues(tables);
+    console.log(util.inspect(tables, {showHidden: false, depth: null}));
 })();
 
 async function extractTables(){

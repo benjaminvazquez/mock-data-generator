@@ -30,5 +30,6 @@ module.exports = {
                                     AND ccu.table_schema = tc.table_schema
                                 WHERE constraint_type = 'FOREIGN KEY'
                             `,
-    enum_range_query: `SELECT unnest(enum_range(NULL::$1)) `
+    enum_range_query: 'SELECT unnest(enum_range(NULL::%param0%)) as enumName',
+    enum_default: 'SELECT %param0% as enumvalue'
 };

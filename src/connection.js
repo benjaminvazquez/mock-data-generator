@@ -36,23 +36,17 @@ module.exports = {
             return resultQuery;
         }
 
+        /**
+         * @param {string} queryText
+         * @param {Array} params
+         * @param {boolean} manageConnection
+         */
         async function queryResultParams(queryText, params, manageConnection = true){
-            var resultQuery = [];
-            if(manageConnection){
-                await open();
+            for(let i = 0; i < params.length; i++){
+                let str = '%param'+i+'%';
+                queryText = queryText.replace(str, params[i]);
             }
-            await client.query(queryText,...params).then(
-                function (result) {
-                    resultQuery = result.rows;
-                }).catch(
-                function (err) {
-                    console.log(err);
-                });
-            if(manageConnection){
-                await close();
-            }
-
-            return resultQuery;
+            return await queryResult(queryText, manageConnection);
         }
 
         async function close(){

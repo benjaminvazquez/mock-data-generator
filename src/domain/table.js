@@ -42,17 +42,30 @@ Table.prototype.fillEnums = async function () {
             return col.isEnum();
         });
     for(var columnEnum of columnsWithEnumType){
-        columnEnum.possibleValues = await setEnumValues(columnEnum.udtName);
+        columnEnum.possibleValues = await getEnumValues(columnEnum.udtName);
+        columnEnum.default = await getEnumDefault(columnEnum.default);
     }
 }
 
 /**
  * @param {string} columnName
  */
-async function setEnumValues(columnName){
-    var result = [];
+async function getEnumValues(columnName){
     var values = await connection.queryParams(queries.enum_range_query, [columnName]);
-    console.log(values);
+    var result = [];
+    values.reduce(function(prev, curr){
+        return result.push(curr['enumname']);
+    }, '');
+    return result;
+}
+
+async function getEnumDefault(defaultDescription){
+    var result = '';
+    var values = await connection.queryParams(queries.enum_default, [defaultDescription]);
+    var firstOcurrence = values[0];
+    if(firstOcurrence){
+        result = firstOcurrence['enumvalue'];
+    }
     return result;
 }
 
