@@ -1,0 +1,10 @@
+[
+    {
+        "table_name": "***",
+        "generate_data": false
+    },
+    {
+        "table_name": "***",
+        "max_number_registries" : 5
+    }
+]
